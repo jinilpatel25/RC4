@@ -1,0 +1,43 @@
+# Reading C:/modelsim_ase/tcl/vsim/pref.tcl
+# do rc4_run_msim_rtl_verilog.do
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Model Technology ModelSim PE vmap 10.3c Lib Mapping Utility 2014.09 Sep 20 2014
+# vmap -modelsim_quiet work rtl_work 
+# Copying C:/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# ** Warning: Copied C:/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini.
+#          Updated modelsim.ini.
+# 
+# vlog -sv -work work +incdir+C:/Users/pedri/OneDrive/햞ea\ de\ Trabalho/Lab4/RC4/template_de1soc {C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/template_de1soc/s_memory.v}
+# Model Technology ModelSim ALTERA vlog 10.3c Compiler 2014.09 Sep 20 2014
+# Start time: 17:18:50 on Mar 11,2021
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/template_de1soc" C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/template_de1soc/s_memory.v 
+# init_dbinfo() DATABASE ERROR: (sqlite3_open C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/template_de1soc/simulation/modelsim/rtl_work/_lib.qdb): unable to open database file
+# mtilibWrite(): Unexpected null object encountered
+# ** Fatal: (vlog-9) Problem while writing token file "C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/template_de1soc/simulation/modelsim/rtl_work/_temp/vlogxgv6w8".
+# 
+# The system cannot find the path specified. (GetLastError() = 3)
+# ** Error: C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/template_de1soc/s_memory.v(37): Verilog Compiler exiting
+# End time: 17:18:50 on Mar 11,2021, Elapsed time: 0:00:00
+# Errors: 2, Warnings: 0
+# ** Error: C:/modelsim_ase/win32aloem/vlog failed.
+# Error in macro ./rc4_run_msim_rtl_verilog.do line 8
+# C:/modelsim_ase/win32aloem/vlog failed.
+#     while executing
+# "vlog -sv -work work +incdir+C:/Users/pedri/OneDrive/햞ea\ de\ Trabalho/Lab4/RC4/template_de1soc {C:/Users/pedri/OneDrive/햞ea de Trabalho/Lab4/RC4/tem..."
+vlog -work rtl_work -refresh -force_refresh
+# Model Technology ModelSim ALTERA vlog 10.3c Compiler 2014.09 Sep 20 2014
+# Start time: 17:20:50 on Mar 11,2021
+# vlog -reportprogress 300 -work rtl_work -refresh -force_refresh 
+# End time: 17:20:50 on Mar 11,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom -work rtl_work -refresh -force_refresh
+# Model Technology ModelSim ALTERA vcom 10.3c Compiler 2014.09 Sep 20 2014
+# Start time: 17:20:50 on Mar 11,2021
+# vcom -reportprogress 300 -work rtl_work -refresh -force_refresh 
+# End time: 17:20:50 on Mar 11,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

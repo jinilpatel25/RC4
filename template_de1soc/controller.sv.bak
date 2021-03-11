@@ -1,0 +1,129 @@
+`default_nettype none
+module controller(clk, reset, switch, start, finish);
+
+input logic clk, reset, start;
+input logic [9:0] switch;
+
+output logic finish;
+
+logic [2:0] secret_key[7:0];
+assign secret_key[0] = 8'b0;
+assign secret_key[1] = {6'b0,switch[9:8]};
+assign secret_key[2] = switch[7:0];
+
+logic state, next_state;
+logic wen;
+logic [7:0] data,address,q;
+
+logic [7:0] i = 8'b0;
+logic [7:0] j = 8'b0;
+logic increase;
+logic done_counting_i = 1'b0;
+logic finish;
+
+logic read_j = state[]
+logic read_i = state[]
+logic str_i = state[]
+logic str_j = state[]
+logic read = state[]
+logic start_swap
+
+logic [7:0] i_bus, j_bus, temp;
+
+parameter [] idle = 
+parameter [] check_cond = 
+parameter [] increment_i =
+parameter [] update_j = 
+parameter [] read_S_memory_j =
+parameter [] store_j = 
+parameter [] read_S_memory_i =
+parameter [] store_i =
+parameter [] swap = 
+parameter [] finish_state = 
+
+assign wen = state[]
+assign increase_i = state[]
+assign increase_j = state[]
+assign finish = state[]
+assign read_j = state[]
+assign read_i = state[]
+assign str_i = state[]
+assign str_j = state[]
+assign read = state[]
+assign start_swap = state[]
+
+s_memory read_write_RAM(address,clk,data,wen,q);
+
+
+always_ff @(posedge increase_i or negedge reset) begin
+    if(~reset) begin
+        i <= 8'b0;
+        done_counting_i <= 1'b0;
+    end
+    else if(i <= 8'hFF) begin
+        i <= i + 8'b1;
+        done_counting_i <= 1'b0;
+    end
+    else begin
+        i <= 8'b0;
+        done_counting_i <= 1'b1;
+    end
+end
+
+always_ff @(posedge increase_j or negedge reset) begin
+    if(~reset) begin
+        j <= 8'b0;
+    end
+    else begin
+        j <= j + i_bus + secret_key[i%3];
+    end
+end
+
+always_ff(posedge clk or negedge reset) begin
+    if(~reset) begin
+        state <= idle;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+always @(*) begin
+    next_state = state;
+    case(state)
+    idle: if(start) begin
+          next_state = check_cond;
+          end
+    check_cond: if(done_countting_i) begin
+                next_state = finish;
+                end
+                else begin
+                next_state = read_S_memory_i;   
+                end
+    read_S_memory_i: next_state = store_i;
+    store_i: next_state = update_j;
+    update_j: next_state = read_S_memory_j;
+    read_S_memory_j: next_state = store_j;
+    store_j: next_state = swap_1;
+    swap_1: next_state = swap_2;
+    swap_2: next_state = increment_i;
+    increment_i: next_state = check_cond;
+    finish_state: next_state = idle;
+end
+
+always_ff @(posedge read) begin
+    if(read_i) begin
+        address <= i;
+    end
+    else if(read_j) begin
+        address <= j;
+    end
+end
+
+always_ff @(posedge str_i) begin
+    i_bus <= q;
+end
+
+always_ff @(posedge str_j) begin
+    j_bus <= q;
+end

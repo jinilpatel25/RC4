@@ -1,23 +1,69 @@
 `default_nettype none
-module initialize_s(data,address,clk,wen,q);
+module initialize_s(data,address,clk,start,finish, selector, reset);
 
-input logic clk;
+input logic clk, reset;
+input logic start;
 
-output logic wen;
-output logic [7:0] data, address,q;
 
-reg [7:0] count = 8'd0;
+output logic finish, selector;
+output logic [7:0] data, address;
 
-assign wen = 1'b1;
+logic [7:0] count = 8'd0;
+logic reach_end = 1'b0;
 
-s_memory lets_initialize(address,clk,data,wen,q);
+logic [2:0] state, next_state;
+logic begin_count;
 
-always_ff @ (posedge clk) begin
-    data <= count;
-    address <= count;
-    if(count < 255) begin
-    count <= count + 8'd1;     
+parameter [2:0] idle = 3'b0_00;
+parameter [2:0] start_counter = 3'b1_01;
+parameter [2:0] finish_state = 3'b0_10; 
+
+assign begin_count = state[0];
+assign finish = state[1];
+assign selector = state[2];
+
+always_ff @ (posedge clk or negedge reset) begin
+    if(~reset) begin
+        count <= 8'd0;
+        reach_end <= 1'b0;
     end
-    else finished = 1'b1;
+    else if(begin_count) begin
+        if(count <= 8'hFF) begin
+            reach_end = 1'b0;
+            count <= count + 8'd1;
+            data <= count;
+            address <= count;
+        end
+        else begin
+            reach_end <= 1'b1;
+            count <= 8'd0;
+			data <= 8'd0;
+			address <= 8'd0;
+        end
+    end
 end
+
+always_ff @(posedge clk or negedge reset) begin
+    if(~reset) begin
+        state <= idle;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+always @(*) begin
+    next_state = state;
+    case(state)
+    idle: if(start) begin
+          next_state = start_counter;
+          end
+    start_counter: if(reach_end) begin
+               next_state = finish_state;
+               end
+    finish_state: next_state = idle;
+default: next_state = idle;
+endcase
+end
+
 endmodule
