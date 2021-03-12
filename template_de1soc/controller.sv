@@ -1,5 +1,5 @@
 `default_nettype none
-module controller(clk,reset,data,address,q,start,finish,switch,wen);
+module controller(clk,reset,data,address,q,start,finish,switch,wen,LEDR);
 
 input logic clk,reset,start;
 input logic [7:0] q;
@@ -7,6 +7,7 @@ input logic [9:0] switch;
 
 output logic finish,wen;
 output logic [7:0] data,address;
+output logic [9:0] LEDR;
 assign address = address_x;
 assign data = data_x;
 
@@ -35,18 +36,20 @@ logic read_value_i, read_value_j; //read flags
 logic [7:0] address_x,data_x; //address and data variables
 
 logic str_i, str_j; //flags to start storing
-                            //98_7654_3210
-parameter [10:0] idle = 11'b0_00_0000_0000;
-parameter [10:0] check_cond = 11'b1_00_0000_0000;
+                                        //98_7654_3210
+parameter [10:0] idle               = 11'b0_00_0000_0000;
+//parameter [10:0] check_cond = 11'b1_00_0000_0000;
 parameter [10:0] read_at_location_i = 11'b0_10_0000_0000;
-parameter [10:0] store_data_i = 11'b0_01_0000_0000;
-parameter [10:0] update_j = 11'b0_00_1000_0000;
+parameter [10:0] store_data_i       = 11'b0_01_0000_0000;
+parameter [10:0] update_j           = 11'b0_00_1000_0000;
 parameter [10:0] read_at_location_j = 11'b0_00_0100_0000;
-parameter [10:0] store_data_j = 11'b0_00_0010_0000;
-parameter [10:0] swap_stage_1 = 11'b0_00_0001_0001;
-parameter [10:0] swap_stage_2 = 11'b0_00_0000_1001;
-parameter [10:0] update_i = 11'b0_00_0000_0100;
-parameter [10:0] finish_stage = 11'b0_00_0000_0010;
+parameter [10:0] store_data_j       = 11'b0_00_0010_0000;
+parameter [10:0] swap_stage_1       = 11'b0_00_0001_0000;
+parameter [10:0] write_stage_1      = 11'b0_00_0000_0001;
+parameter [10:0] swap_stage_2       = 11'b0_00_0000_1000;
+parameter [10:0] write_stage_2      = 11'b1_00_0000_0001;
+parameter [10:0] update_i           = 11'b0_00_0000_0100;
+parameter [10:0] finish_stage       = 11'b0_00_0000_0010;
 
 assign read_value_i = state[9];
 assign str_i = state[8];
@@ -59,7 +62,7 @@ assign increment_i = state[2];
 assign finish = state[1];
 assign wen = state[0];
 
-always_ff @ (posedge clk or negedge reset) begin //update i
+always_ff @ (posedge clk or negedge reset) begin //update for i = 0 to 255
     if(~reset) begin
         i <= 8'd0;
         reach_end <= 1'b0;
@@ -71,18 +74,21 @@ always_ff @ (posedge clk or negedge reset) begin //update i
         end
         else begin
             reach_end <= 1'b1;
-            i <= i + 8'd1;
+            i <= 8'd0;
         end
     end
 end
 
 always_ff @(posedge clk or negedge reset) begin //update j
     if(~reset) begin
-        j <= 8'h0;
+        j <= 8'd0;
     end
     else if(change_j) begin
-        j <= j + data_i + secret_key[i%3];
+        j <= j + data_i + secret_key[i % 8'd3];
     end
+	 else if(finish) begin
+	     j <= 8'd0;
+	 end
 end
 
 always_ff @(posedge clk or negedge reset) begin
@@ -104,19 +110,15 @@ always @(*) begin
             idle: if(start) begin
                   next_state = read_at_location_i; 
                   end
-            /*check_cond: if(i != 8'hFF) begin
-                        next_state = read_at_location_i;
-                        end
-                        else begin
-                            next_state = finish;
-                        end */
             read_at_location_i: next_state = store_data_i;
             store_data_i: next_state = update_j;
             update_j: next_state = read_at_location_j;
             read_at_location_j: next_state = store_data_j;
             store_data_j: next_state = swap_stage_1;
-            swap_stage_1: next_state = swap_stage_2;
-            swap_stage_2: next_state = update_i;
+            swap_stage_1: next_state = write_stage_1;
+            write_stage_1: next_state = swap_stage_2;
+            swap_stage_2: next_state = write_stage_2;
+            write_stage_2: next_state = update_i;
             update_i: if(reach_end) begin
 				          next_state = finish_stage;
 							 end

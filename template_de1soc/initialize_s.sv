@@ -16,11 +16,14 @@ logic begin_count;
 
 parameter [2:0] idle = 3'b0_00;
 parameter [2:0] start_counter = 3'b1_01;
+parameter [2:0] wait_one_cycle = 3'b1_00;
 parameter [2:0] finish_state = 3'b0_10; 
 
 assign begin_count = state[0];
 assign finish = state[1];
 assign selector = state[2];
+assign data = count;
+assign address = count;
 
 always_ff @ (posedge clk or negedge reset) begin
     if(~reset) begin
@@ -28,18 +31,7 @@ always_ff @ (posedge clk or negedge reset) begin
         reach_end <= 1'b0;
     end
     else if(begin_count) begin
-        if(count <= 8'hFF) begin
-            reach_end = 1'b0;
-            count <= count + 8'd1;
-            data <= count;
-            address <= count;
-        end
-        else begin
-            reach_end <= 1'b1;
-            count <= 8'd0;
-			data <= 8'd0;
-			address <= 8'd0;
-        end
+        count <= count + 8'd1;
     end
 end
 
@@ -58,10 +50,13 @@ always @(*) begin
     idle: if(start) begin
           next_state = start_counter;
           end
-    start_counter: if(reach_end) begin
-               next_state = finish_state;
+          else next_state = idle;
+    start_counter: if(count==8'hFF) begin
+               next_state = wait_one_cycle;
                end
-    finish_state: next_state = idle;
+               else next_state = start_counter;
+    wait_one_cycle: next_state = finish_state;
+finish_state: next_state = idle;
 default: next_state = idle;
 endcase
 end
