@@ -43,8 +43,7 @@ trap_edge generate_synced_pulse(.async_sig(~KEY[2]),
                           .start(finish_initialization),
                           .finish(finish_swapping),
                           .switch(SW),
-                          .wen(swap_wren),
-                          .LEDR(LEDR)
+                          .wen(swap_wren)
                           );
 
 	 assign address = selector?initial_address:swapped_address;

@@ -1,19 +1,19 @@
 |ksa
-CLOCK_50 => CLOCK_50.IN2
-KEY[0] => _.IN1
-KEY[1] => KEY[1].IN1
-KEY[2] => ~NO_FANOUT~
+CLOCK_50 => CLOCK_50.IN4
+KEY[0] => ~NO_FANOUT~
+KEY[1] => ~NO_FANOUT~
+KEY[2] => _.IN1
 KEY[3] => ~NO_FANOUT~
-SW[0] => ~NO_FANOUT~
-SW[1] => ~NO_FANOUT~
-SW[2] => ~NO_FANOUT~
-SW[3] => ~NO_FANOUT~
-SW[4] => ~NO_FANOUT~
-SW[5] => ~NO_FANOUT~
-SW[6] => ~NO_FANOUT~
-SW[7] => ~NO_FANOUT~
-SW[8] => ~NO_FANOUT~
-SW[9] => ~NO_FANOUT~
+SW[0] => SW[0].IN1
+SW[1] => SW[1].IN1
+SW[2] => SW[2].IN1
+SW[3] => SW[3].IN1
+SW[4] => SW[4].IN1
+SW[5] => SW[5].IN1
+SW[6] => SW[6].IN1
+SW[7] => SW[7].IN1
+SW[8] => SW[8].IN1
+SW[9] => SW[9].IN1
 LEDR[0] <= <GND>
 LEDR[1] <= <GND>
 LEDR[2] <= <GND>
@@ -68,42 +68,60 @@ HEX5[5] <= <GND>
 HEX5[6] <= <GND>
 
 
-|ksa|initialize_s:call_initialize
-data[0] <= data[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[1] <= data[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[2] <= data[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[3] <= data[3]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[4] <= data[4]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[5] <= data[5]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[6] <= data[6]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-data[7] <= data[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[0] <= address[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[1] <= address[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[2] <= address[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[3] <= address[3]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[4] <= address[4]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[5] <= address[5]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[6] <= address[6]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-address[7] <= address[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+|ksa|trap_edge:generate_synced_pulse
+async_sig => async_sig.IN1
+outclk => outclk.IN3
+out_sync_sig <= out_3.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ksa|trap_edge:generate_synced_pulse|arDFF:FFf
+clk => q[0]~reg0.CLK
+reset => q[0]~reg0.ACLR
+d[0] => q[0]~reg0.DATAIN
+q[0] <= q[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ksa|trap_edge:generate_synced_pulse|arDFF:FFs
+clk => q[0]~reg0.CLK
+reset => q[0]~reg0.ACLR
+d[0] => q[0]~reg0.DATAIN
+q[0] <= q[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ksa|trap_edge:generate_synced_pulse|arDFF:FFt
+clk => q[0]~reg0.CLK
+reset => q[0]~reg0.ACLR
+d[0] => q[0]~reg0.DATAIN
+q[0] <= q[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ksa|trap_edge:generate_synced_pulse|arDFF:FFfo
+clk => q[0]~reg0.CLK
+reset => q[0]~reg0.ACLR
+d[0] => q[0]~reg0.DATAIN
+q[0] <= q[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ksa|initialize_s:initialize_memory
+data[0] <= count[0].DB_MAX_OUTPUT_PORT_TYPE
+data[1] <= count[1].DB_MAX_OUTPUT_PORT_TYPE
+data[2] <= count[2].DB_MAX_OUTPUT_PORT_TYPE
+data[3] <= count[3].DB_MAX_OUTPUT_PORT_TYPE
+data[4] <= count[4].DB_MAX_OUTPUT_PORT_TYPE
+data[5] <= count[5].DB_MAX_OUTPUT_PORT_TYPE
+data[6] <= count[6].DB_MAX_OUTPUT_PORT_TYPE
+data[7] <= count[7].DB_MAX_OUTPUT_PORT_TYPE
+address[0] <= count[0].DB_MAX_OUTPUT_PORT_TYPE
+address[1] <= count[1].DB_MAX_OUTPUT_PORT_TYPE
+address[2] <= count[2].DB_MAX_OUTPUT_PORT_TYPE
+address[3] <= count[3].DB_MAX_OUTPUT_PORT_TYPE
+address[4] <= count[4].DB_MAX_OUTPUT_PORT_TYPE
+address[5] <= count[5].DB_MAX_OUTPUT_PORT_TYPE
+address[6] <= count[6].DB_MAX_OUTPUT_PORT_TYPE
+address[7] <= count[7].DB_MAX_OUTPUT_PORT_TYPE
 clk => state[0].CLK
 clk => state[1].CLK
 clk => state[2].CLK
-clk => address[0]~reg0.CLK
-clk => address[1]~reg0.CLK
-clk => address[2]~reg0.CLK
-clk => address[3]~reg0.CLK
-clk => address[4]~reg0.CLK
-clk => address[5]~reg0.CLK
-clk => address[6]~reg0.CLK
-clk => address[7]~reg0.CLK
-clk => data[0]~reg0.CLK
-clk => data[1]~reg0.CLK
-clk => data[2]~reg0.CLK
-clk => data[3]~reg0.CLK
-clk => data[4]~reg0.CLK
-clk => data[5]~reg0.CLK
-clk => data[6]~reg0.CLK
-clk => data[7]~reg0.CLK
 clk => count[0].CLK
 clk => count[1].CLK
 clk => count[2].CLK
@@ -112,10 +130,8 @@ clk => count[4].CLK
 clk => count[5].CLK
 clk => count[6].CLK
 clk => count[7].CLK
-clk => reach_end.CLK
-start => next_state.OUTPUTSELECT
-start => next_state.OUTPUTSELECT
-start => next_state.OUTPUTSELECT
+start => Mux0.IN7
+start => Mux2.IN7
 finish <= state[1].DB_MAX_OUTPUT_PORT_TYPE
 selector <= state[2].DB_MAX_OUTPUT_PORT_TYPE
 reset => count[0].ACLR
@@ -126,29 +142,163 @@ reset => count[4].ACLR
 reset => count[5].ACLR
 reset => count[6].ACLR
 reset => count[7].ACLR
-reset => reach_end.ACLR
 reset => state[0].ACLR
 reset => state[1].ACLR
 reset => state[2].ACLR
-reset => data[7]~reg0.ENA
-reset => data[6]~reg0.ENA
-reset => data[5]~reg0.ENA
-reset => data[4]~reg0.ENA
-reset => data[3]~reg0.ENA
-reset => data[2]~reg0.ENA
-reset => data[1]~reg0.ENA
-reset => data[0]~reg0.ENA
-reset => address[7]~reg0.ENA
-reset => address[6]~reg0.ENA
-reset => address[5]~reg0.ENA
-reset => address[4]~reg0.ENA
-reset => address[3]~reg0.ENA
-reset => address[2]~reg0.ENA
-reset => address[1]~reg0.ENA
-reset => address[0]~reg0.ENA
 
 
-|ksa|s_memory:write_read_memory
+|ksa|controller:swap_memory
+clk => j[0].CLK
+clk => j[1].CLK
+clk => j[2].CLK
+clk => j[3].CLK
+clk => j[4].CLK
+clk => j[5].CLK
+clk => j[6].CLK
+clk => j[7].CLK
+clk => data_j[0].CLK
+clk => data_j[1].CLK
+clk => data_j[2].CLK
+clk => data_j[3].CLK
+clk => data_j[4].CLK
+clk => data_j[5].CLK
+clk => data_j[6].CLK
+clk => data_j[7].CLK
+clk => data_i[0].CLK
+clk => data_i[1].CLK
+clk => data_i[2].CLK
+clk => data_i[3].CLK
+clk => data_i[4].CLK
+clk => data_i[5].CLK
+clk => data_i[6].CLK
+clk => data_i[7].CLK
+clk => data_x[0].CLK
+clk => data_x[1].CLK
+clk => data_x[2].CLK
+clk => data_x[3].CLK
+clk => data_x[4].CLK
+clk => data_x[5].CLK
+clk => data_x[6].CLK
+clk => data_x[7].CLK
+clk => address_x[0].CLK
+clk => address_x[1].CLK
+clk => address_x[2].CLK
+clk => address_x[3].CLK
+clk => address_x[4].CLK
+clk => address_x[5].CLK
+clk => address_x[6].CLK
+clk => address_x[7].CLK
+clk => i[0].CLK
+clk => i[1].CLK
+clk => i[2].CLK
+clk => i[3].CLK
+clk => i[4].CLK
+clk => i[5].CLK
+clk => i[6].CLK
+clk => i[7].CLK
+clk => reach_end.CLK
+clk => state[0].CLK
+clk => state[1].CLK
+clk => state[2].CLK
+clk => state[3].CLK
+clk => state[4].CLK
+clk => state[5].CLK
+clk => state[6].CLK
+clk => state[7].CLK
+clk => state[8].CLK
+clk => state[9].CLK
+clk => state[10].CLK
+clk => state[11].CLK
+reset => next_state[11].OUTPUTSELECT
+reset => next_state[10].OUTPUTSELECT
+reset => next_state[9].OUTPUTSELECT
+reset => next_state[8].OUTPUTSELECT
+reset => next_state[7].OUTPUTSELECT
+reset => next_state[6].OUTPUTSELECT
+reset => next_state[5].OUTPUTSELECT
+reset => next_state[4].OUTPUTSELECT
+reset => next_state[3].OUTPUTSELECT
+reset => next_state[2].OUTPUTSELECT
+reset => next_state[1].OUTPUTSELECT
+reset => next_state[0].OUTPUTSELECT
+reset => state[0].ACLR
+reset => state[1].ACLR
+reset => state[2].ACLR
+reset => state[3].ACLR
+reset => state[4].ACLR
+reset => state[5].ACLR
+reset => state[6].ACLR
+reset => state[7].ACLR
+reset => state[8].ACLR
+reset => state[9].ACLR
+reset => state[10].ACLR
+reset => state[11].ACLR
+reset => j[0].ACLR
+reset => j[1].ACLR
+reset => j[2].ACLR
+reset => j[3].ACLR
+reset => j[4].ACLR
+reset => j[5].ACLR
+reset => j[6].ACLR
+reset => j[7].ACLR
+reset => i[0].ACLR
+reset => i[1].ACLR
+reset => i[2].ACLR
+reset => i[3].ACLR
+reset => i[4].ACLR
+reset => i[5].ACLR
+reset => i[6].ACLR
+reset => i[7].ACLR
+reset => reach_end.ACLR
+data[0] <= data_x[0].DB_MAX_OUTPUT_PORT_TYPE
+data[1] <= data_x[1].DB_MAX_OUTPUT_PORT_TYPE
+data[2] <= data_x[2].DB_MAX_OUTPUT_PORT_TYPE
+data[3] <= data_x[3].DB_MAX_OUTPUT_PORT_TYPE
+data[4] <= data_x[4].DB_MAX_OUTPUT_PORT_TYPE
+data[5] <= data_x[5].DB_MAX_OUTPUT_PORT_TYPE
+data[6] <= data_x[6].DB_MAX_OUTPUT_PORT_TYPE
+data[7] <= data_x[7].DB_MAX_OUTPUT_PORT_TYPE
+address[0] <= address_x[0].DB_MAX_OUTPUT_PORT_TYPE
+address[1] <= address_x[1].DB_MAX_OUTPUT_PORT_TYPE
+address[2] <= address_x[2].DB_MAX_OUTPUT_PORT_TYPE
+address[3] <= address_x[3].DB_MAX_OUTPUT_PORT_TYPE
+address[4] <= address_x[4].DB_MAX_OUTPUT_PORT_TYPE
+address[5] <= address_x[5].DB_MAX_OUTPUT_PORT_TYPE
+address[6] <= address_x[6].DB_MAX_OUTPUT_PORT_TYPE
+address[7] <= address_x[7].DB_MAX_OUTPUT_PORT_TYPE
+q[0] => data_i[0].DATAIN
+q[0] => data_j[0].DATAIN
+q[1] => data_j[1].DATAIN
+q[1] => data_i[1].DATAIN
+q[2] => data_j[2].DATAIN
+q[2] => data_i[2].DATAIN
+q[3] => data_j[3].DATAIN
+q[3] => data_i[3].DATAIN
+q[4] => data_j[4].DATAIN
+q[4] => data_i[4].DATAIN
+q[5] => data_j[5].DATAIN
+q[5] => data_i[5].DATAIN
+q[6] => data_j[6].DATAIN
+q[6] => data_i[6].DATAIN
+q[7] => data_j[7].DATAIN
+q[7] => data_i[7].DATAIN
+start => Selector0.IN5
+start => Selector1.IN5
+finish <= state[1].DB_MAX_OUTPUT_PORT_TYPE
+switch[0] => Mux7.IN4
+switch[1] => Mux6.IN4
+switch[2] => Mux5.IN5
+switch[3] => Mux4.IN5
+switch[4] => Mux3.IN5
+switch[5] => Mux2.IN5
+switch[6] => Mux1.IN5
+switch[7] => Mux0.IN5
+switch[8] => Mux7.IN5
+switch[9] => Mux6.IN5
+wen <= state[0].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ksa|s_memory:RAM
 address[0] => address[0].IN1
 address[1] => address[1].IN1
 address[2] => address[2].IN1
@@ -177,7 +327,7 @@ q[6] <= altsyncram:altsyncram_component.q_a
 q[7] <= altsyncram:altsyncram_component.q_a
 
 
-|ksa|s_memory:write_read_memory|altsyncram:altsyncram_component
+|ksa|s_memory:RAM|altsyncram:altsyncram_component
 wren_a => altsyncram_tf12:auto_generated.wren_a
 rden_a => ~NO_FANOUT~
 wren_b => ~NO_FANOUT~
@@ -226,7 +376,7 @@ eccstatus[1] <= <GND>
 eccstatus[2] <= <GND>
 
 
-|ksa|s_memory:write_read_memory|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated
+|ksa|s_memory:RAM|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated
 address_a[0] => altsyncram_8vn2:altsyncram1.address_a[0]
 address_a[1] => altsyncram_8vn2:altsyncram1.address_a[1]
 address_a[2] => altsyncram_8vn2:altsyncram1.address_a[2]
@@ -255,7 +405,7 @@ q_a[7] <= altsyncram_8vn2:altsyncram1.q_a[7]
 wren_a => altsyncram_8vn2:altsyncram1.wren_a
 
 
-|ksa|s_memory:write_read_memory|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|altsyncram_8vn2:altsyncram1
+|ksa|s_memory:RAM|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|altsyncram_8vn2:altsyncram1
 address_a[0] => ram_block3a0.PORTAADDR
 address_a[0] => ram_block3a1.PORTAADDR
 address_a[0] => ram_block3a2.PORTAADDR
@@ -450,7 +600,7 @@ wren_b => ram_block3a6.PORTBWE
 wren_b => ram_block3a7.PORTBWE
 
 
-|ksa|s_memory:write_read_memory|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|sld_mod_ram_rom:mgl_prim2
+|ksa|s_memory:RAM|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|sld_mod_ram_rom:mgl_prim2
 tck_usr <= sld_jtag_endpoint_adapter:jtag_signal_adapter.adapted_tck
 address[0] <= ram_rom_addr_reg[0].DB_MAX_OUTPUT_PORT_TYPE
 address[1] <= ram_rom_addr_reg[1].DB_MAX_OUTPUT_PORT_TYPE
@@ -501,7 +651,7 @@ ir_out[4] <= sld_jtag_endpoint_adapter:jtag_signal_adapter.ir_out[4]
 tdo <= sld_jtag_endpoint_adapter:jtag_signal_adapter.tdo
 
 
-|ksa|s_memory:write_read_memory|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|sld_mod_ram_rom:mgl_prim2|sld_jtag_endpoint_adapter:jtag_signal_adapter
+|ksa|s_memory:RAM|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|sld_mod_ram_rom:mgl_prim2|sld_jtag_endpoint_adapter:jtag_signal_adapter
 raw_tck => adapted_tck.DATAIN
 raw_tms => adapted_tms.DATAIN
 tdi => adapted_tdi.DATAIN
@@ -570,7 +720,7 @@ adapted_ir_out[3] => ir_out[3].DATAIN
 adapted_ir_out[4] => ir_out[4].DATAIN
 
 
-|ksa|s_memory:write_read_memory|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|sld_mod_ram_rom:mgl_prim2|sld_rom_sr:\ram_rom_logic_gen:name_gen:info_rom_sr
+|ksa|s_memory:RAM|altsyncram:altsyncram_component|altsyncram_tf12:auto_generated|sld_mod_ram_rom:mgl_prim2|sld_rom_sr:\ram_rom_logic_gen:name_gen:info_rom_sr
 ROM_DATA[0] => Mux3.IN131
 ROM_DATA[1] => Mux2.IN131
 ROM_DATA[2] => Mux1.IN131

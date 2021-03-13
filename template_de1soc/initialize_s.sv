@@ -16,7 +16,7 @@ logic begin_count;
 
 parameter [2:0] idle = 3'b0_00;
 parameter [2:0] start_counter = 3'b1_01;
-parameter [2:0] wait_one_cycle = 3'b1_00;
+parameter [2:0] wait_one_cycle = 3'b110;
 parameter [2:0] finish_state = 3'b0_10; 
 
 assign begin_count = state[0];
