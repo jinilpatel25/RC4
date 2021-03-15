@@ -1,17 +1,18 @@
 `default_nettype none
-module controller(clk,reset,data,address,q,start,finish,switch,wen);
+module controller(clk,reset,data,address,q,start,finish,switch,wen,selector2);
 
 // variable declaration
 //Input
 input logic clk,reset,start;
 input logic [7:0] q;
 input logic [9:0] switch;
+
 //Output
-output logic finish,wen;
+output logic finish,wen, selector2;
 output logic [7:0] data,address;
 //State variables
-logic [11:0] state;
-logic [11:0] next_state;  
+logic [12:0] state;
+logic [12:0] next_state;  
 //address variables
 logic [7:0] i = 8'd0; 
 logic [7:0] j = 8'd0;
@@ -43,21 +44,21 @@ assign data = data_x;
 
 //State Encoding 
                                            //98_7654_3210
-parameter [11:0] idle               = 12'b00_00_0000_0000;//    0            
-parameter [11:0] read_at_location_i = 12'b00_10_0000_0000;//    200
-parameter [11:0] store_data_i       = 12'b00_01_0000_0000;//    100
-parameter [11:0] update_j           = 12'b00_00_1000_0000;//    80
-parameter [11:0] read_at_location_j = 12'b00_00_0100_0000;//    40
-parameter [11:0] store_data_j       = 12'b00_00_0010_0000;//    20
-parameter [11:0] swap_stage_1       = 12'b00_00_0001_0000;//    10
-parameter [11:0] write_stage_1      = 12'b00_00_0000_0001;//    1
-parameter [11:0] swap_stage_2       = 12'b00_00_0000_1000;//    8
-parameter [11:0] write_stage_2      = 12'b01_00_0000_0001;//    401
-parameter [11:0] update_i           = 12'b00_00_0000_0100;//    4
-parameter [11:0] finish_stage       = 12'b00_00_0000_0010;//    2
-parameter [11:0] wait_data_i        = 12'b01_00_0000_0000;//    400
-parameter [11:0] wait_data_j        = 12'b10_00_0000_0000;//    800
-parameter [11:0] check_cond         = 12'b11_00_0000_0000;//    1200
+parameter [12:0] idle               = 13'b000_00_0000_0000;//    0            
+parameter [12:0] read_at_location_i = 13'b100_10_0000_0000;//    200
+parameter [12:0] store_data_i       = 13'b100_01_0000_0000;//    100
+parameter [12:0] update_j           = 13'b100_00_1000_0000;//    80
+parameter [12:0] read_at_location_j = 13'b100_00_0100_0000;//    40
+parameter [12:0] store_data_j       = 13'b100_00_0010_0000;//    20
+parameter [12:0] swap_stage_1       = 13'b100_00_0001_0000;//    10
+parameter [12:0] write_stage_1      = 13'b100_00_0000_0001;//    1
+parameter [12:0] swap_stage_2       = 13'b100_00_0000_1000;//    8
+parameter [12:0] write_stage_2      = 13'b101_00_0000_0001;//    401
+parameter [12:0] update_i           = 13'b100_00_0000_0100;//    4
+parameter [12:0] finish_stage       = 13'b100_00_0000_0010;//    2
+parameter [12:0] wait_data_i        = 13'b101_00_0000_0000;//    400
+parameter [12:0] wait_data_j        = 13'b110_00_0000_0000;//    800
+parameter [12:0] check_cond         = 13'b111_00_0000_0000;//    1200
 
 assign read_value_i  = state[9];
 assign str_i         = state[8];
@@ -70,7 +71,7 @@ assign increment_i   = state[2];
 assign finish        = state[1];
 assign wen           = state[0];
 
-
+assign selector2 = state[12];
 
 
 //========================State machine============================//

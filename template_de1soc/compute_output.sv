@@ -12,11 +12,13 @@ module compute_output (
     wren_s,
     wren_d,
     start,
-    finish
+    finish,
+    selector3
 );
 
  input logic clk;
  input logic reset;
+ output logic selector3;
  //S_RAM Communication
  output logic [7:0] data_s; 
  output logic [7:0] address_s;
@@ -67,7 +69,7 @@ logic readE;
 logic send_dram_var;
 logic reach_end;
 
-logic [21:0] state, next_state;
+logic [22:0] state, next_state;
 
 assign address_s = address_xs; //S RAM Communication Variables
 assign data_s = data_xs;
@@ -78,33 +80,32 @@ assign address_d = address_xd; //D RAM Communication Variables
 assign data_d = data_xd;
 
 //State enconding                            876 5432 1098 7654 3210
- parameter [21:0] idle =             22'b000_000_0000_0000_0000_0000;// v
- parameter [21:0] check_cond =       22'b001_000_0000_0000_0000_0000;// |  
- parameter [21:0] increment_i =      22'b000_000_0000_0000_0000_0001;// |  
- parameter [21:0] read_at_i =        22'b000_000_0000_0000_0000_0010;// |    
- parameter [21:0] wait_data_i =      22'b010_000_0000_0000_0000_0000;// |  
- parameter [21:0] capture_data_i =   22'b000_000_0000_0000_0000_0100;// |
- parameter [21:0] update_j =         22'b000_000_0000_0000_0000_1000;// |    
- parameter [21:0] read_at_j =        22'b000_000_0000_0000_0001_0000;// |   
- parameter [21:0] wait_data_j =      22'b011_000_0000_0000_0000_0000;// |
- parameter [21:0] capture_data_j =   22'b000_000_0000_0000_0010_0000;// |
- parameter [21:0] swap_stage_1 =     22'b000_000_0000_0000_0100_0000;// |  
- parameter [21:0] write_stage_1  =   22'b000_010_0000_0000_0000_0000;// |
- parameter [21:0] swap_stage_2  =    22'b000_000_0000_0000_1000_0000;// |    
- parameter [21:0] write_stage_2 =    22'b001_010_0000_0000_0000_0000;// |    
- parameter [21:0] add_data =         22'b000_000_0000_0001_0000_0000;// |    
- parameter [21:0] read_at_add_data = 22'b000_000_0000_0010_0000_0000;// |
- parameter [21:0] wait_added_data =  22'b100_000_0000_0000_0000_0000;// |
- parameter [21:0] capture_f =        22'b000_000_0000_0100_0000_0000;// |
- parameter [21:0] readE_at_k =       22'b000_000_0000_1000_0000_0000;// |
- parameter [21:0] wait_data_E =      22'b101_000_0000_0000_0000_0000;// |
- parameter [21:0] capture_data_E =   22'b000_000_0001_0000_0000_0000;// |
- parameter [21:0] xor_f_Edata =      22'b000_000_0010_0000_0000_0000;// |
- parameter [21:0] send_dram =        22'b000_000_0100_0000_0000_0000;// |
- parameter [21:0] write_dram =       22'b000_100_0000_0000_0000_0000;// |
- parameter [21:0] increment_k =      22'b000_000_1000_0000_0000_0000;// |
- parameter [21:0] finish_stage =     22'b000_001_0000_0000_0000_0000;// 
-
+ parameter [22:0] idle =             23'b0000_000_0000_0000_0000_0000;// v
+ parameter [22:0] check_cond =       23'b1001_000_0000_0000_0000_0000;// |  
+ parameter [22:0] increment_i =      23'b1000_000_0000_0000_0000_0001;// |  
+ parameter [22:0] read_at_i =        23'b1000_000_0000_0000_0000_0010;// |    
+ parameter [22:0] wait_data_i =      23'b1010_000_0000_0000_0000_0000;// |  
+ parameter [22:0] capture_data_i =   23'b1000_000_0000_0000_0000_0100;// |
+ parameter [22:0] update_j =         23'b1000_000_0000_0000_0000_1000;// |    
+ parameter [22:0] read_at_j =        23'b1000_000_0000_0000_0001_0000;// |   
+ parameter [22:0] wait_data_j =      23'b1011_000_0000_0000_0000_0000;// |
+ parameter [22:0] capture_data_j =   23'b1000_000_0000_0000_0010_0000;// |
+ parameter [22:0] swap_stage_1 =     23'b1000_000_0000_0000_0100_0000;// |  
+ parameter [22:0] write_stage_1  =   23'b1000_010_0000_0000_0000_0000;// |
+ parameter [22:0] swap_stage_2  =    23'b1000_000_0000_0000_1000_0000;// |    
+ parameter [22:0] write_stage_2 =    23'b1001_010_0000_0000_0000_0000;// |    
+ parameter [22:0] add_data =         23'b1000_000_0000_0001_0000_0000;// |    
+ parameter [22:0] read_at_add_data = 23'b1000_000_0000_0010_0000_0000;// |
+ parameter [22:0] wait_added_data =  23'b1100_000_0000_0000_0000_0000;// |
+ parameter [22:0] capture_f =        23'b1000_000_0000_0100_0000_0000;// |
+ parameter [22:0] readE_at_k =       23'b1000_000_0000_1000_0000_0000;// |
+ parameter [22:0] wait_data_E =      23'b1101_000_0000_0000_0000_0000;// |
+ parameter [22:0] capture_data_E =   23'b1000_000_0001_0000_0000_0000;// |
+ parameter [22:0] xor_f_Edata =      23'b1000_000_0010_0000_0000_0000;// |
+ parameter [22:0] send_dram =        23'b1000_000_0100_0000_0000_0000;// |
+ parameter [22:0] write_dram =       23'b1000_100_0000_0000_0000_0000;// |
+ parameter [22:0] increment_k =      23'b1000_000_1000_0000_0000_0000;// |
+ parameter [22:0] finish_stage =     23'b1000_001_0000_0000_0000_0000;// 3
 
 assign increment_i_var  = state[0] ;
 assign read_value_i = state[1] ;
@@ -125,6 +126,7 @@ assign increment_k_var = state[15] ;
 assign finish = state[16] ;
 assign wren_s = state[17] ;
 assign wren_d = state[18] ;
+assign selector3 = state[22];
 
 //========================State machine============================// 
 
@@ -260,6 +262,10 @@ begin
                  begin 
                  next_state = idle;
                  end
+				default:
+				begin
+				next_state = idle;
+				end
         endcase
     end
 end
@@ -279,7 +285,7 @@ end
 //update j
 always_ff @(posedge clk or negedge reset) begin
     if(~reset) begin
-        i <= 8'd0;
+        j <= 8'd0;
     end
     else if(update_j_var) begin
         j <= j + data_is;
