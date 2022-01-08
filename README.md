@@ -1,0 +1,2 @@
+# RC4
+In this lab, I got experience creating a design that contains several on-chip memories. This circuit is an RC4 Decryption circuit which is a popular stream cypher, and was widely used in encrypting web traffic among other uses. RC4 is an important algorithm and provides a good vehicle for studying digital circuits that made  extensive use of on-chip memory. It also provides a basis for implementing some of these variants that are more secure.
